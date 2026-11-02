@@ -1,10 +1,10 @@
 /**
  * SINGLE SOURCE OF TRUTH for all portfolio content.
  *
- * >>> PLACEHOLDER CONTENT <<<
- * Everything marked PLACEHOLDER is temporary and will be replaced with Tamer's
- * real details. The 3D experience is driven entirely by this file, so swapping
- * content never requires touching the scene code.
+ * All content below is from information Tamer verified directly. Nothing is
+ * invented — where a detail (dates, links, metrics) was not provided, it is
+ * intentionally omitted rather than guessed. The 3D experience is driven
+ * entirely by this file, so content never requires touching the scene code.
  */
 
 export interface Project {
@@ -17,6 +17,8 @@ export interface Project {
   year: string;
   links: { label: string; url: string }[];
   highlight?: string;
+  /** Private projects show no links and a "Private" marker. */
+  isPrivate?: boolean;
   /** Accent color for this floor/room (hex). */
   accent: string;
 }
@@ -24,7 +26,7 @@ export interface Project {
 export interface ExperienceItem {
   role: string;
   org: string;
-  period: string;
+  period?: string;
   bullets: string[];
 }
 
@@ -39,100 +41,134 @@ export interface Profile {
   name: string;
   title: string;
   tagline: string;
-  location: string;
   seeking: string;
-  email: string;
+  email?: string;
   socials: { label: string; url: string }[];
 }
 
 export const profile: Profile = {
-  // PLACEHOLDER — confirm exact spelling/casing
   name: "Tamer Shoukri",
-  // PLACEHOLDER
-  title: "AI / Full-Stack Developer",
-  // PLACEHOLDER
-  tagline: "Building polished products that solve real problems.",
-  // PLACEHOLDER
-  location: "Toronto, Canada",
-  // PLACEHOLDER
-  seeking: "Open to Summer 2027+ internships & co-ops",
-  // PLACEHOLDER
-  email: "you@example.com",
-  socials: [
-    // PLACEHOLDER — Math Tug-of-War repo is real; others to confirm
-    { label: "GitHub", url: "https://github.com/Tamer-Shoukri" },
-    { label: "LinkedIn", url: "#" },
-  ],
+  // Factual, derived only from verified info (CS student at Western).
+  title: "Computer Science Student · Software Developer",
+  tagline: "Building polished software that solves real problems.",
+  seeking: "Open to internships & co-ops",
+  // Email intentionally omitted until confirmed.
+  socials: [{ label: "GitHub", url: "https://github.com/Tamer-Shoukri" }],
 };
+
+/** Reusable skill list (verified). */
+export const skills: string[] = [
+  "Python",
+  "Java",
+  "C",
+  "TypeScript",
+  "JavaScript",
+  "HTML",
+  "CSS",
+  "R",
+  "Git",
+  "GitHub",
+  "VS Code",
+  "Linux",
+  "API Integration",
+  "Automation",
+  "Software Testing",
+];
 
 /**
  * Projects map to FLOORS (top floor = first entry). Each is a room you enter.
- * The only real, confirmed project right now is Math Tug-of-War.
  */
 export const projects: Project[] = [
   {
     id: "math-tug-of-war",
     name: "Math Tug-of-War",
-    tagline: "A polished 2D arcade math battler.",
+    tagline: "A 2D browser arcade game.",
     description:
-      "Two players race to answer addition, subtraction, and multiplication questions; every correct answer pulls a shared rope toward their side. First to drag the opponent past the boundary wins. Features local 2-player and a difficulty-scaled AI opponent, combo scoring, and juicy arcade feedback.",
-    role: "Solo developer — design, engine, tests, deploy",
-    tech: ["Phaser 3", "TypeScript", "Vite", "Vitest"],
+      "A polished two-player arcade game where players race to answer addition, subtraction, and multiplication questions — every correct answer pulls a shared rope toward their side, and the first to drag the opponent past the boundary wins. Includes a local two-player mode and a difficulty-scaled AI opponent.",
+    role: "Solo developer",
+    tech: ["Phaser 3", "TypeScript", "Vite"],
     year: "2026",
     links: [
       { label: "Play", url: "https://tamer-shoukri.github.io/math-tug-of-war/" },
       { label: "Code", url: "https://github.com/Tamer-Shoukri/math-tug-of-war" },
     ],
-    highlight: "37 unit tests, browser-verified, auto-deployed via GitHub Actions.",
     accent: "#7fb0e6",
   },
   {
-    // PLACEHOLDER project
-    id: "project-two",
-    name: "Project Two",
-    tagline: "PLACEHOLDER — a second flagship project.",
+    id: "d4c",
+    name: "D4C — Prediction Market Intelligence",
+    tagline: "Private research platform.",
     description:
-      "PLACEHOLDER. Replace with a real project: what problem it solves, your role, the interesting technical decisions, and the outcome.",
-    role: "PLACEHOLDER",
-    tech: ["Next.js", "Node.js", "PostgreSQL"],
-    year: "2026",
-    links: [{ label: "Code", url: "#" }],
+      "A private research platform spanning data pipelines, weather forecasting, and prediction-market analysis. Proprietary implementation and data are kept private.",
+    role: "Developer",
+    tech: ["Python", "Data Pipelines", "Forecasting"],
+    year: "",
+    links: [],
+    isPrivate: true,
     accent: "#d6b98a",
   },
   {
-    // PLACEHOLDER project
-    id: "project-three",
-    name: "Project Three",
-    tagline: "PLACEHOLDER — a third notable project.",
-    description:
-      "PLACEHOLDER. Replace with a real project. Emphasize product thinking, technical depth, and measurable results.",
-    role: "PLACEHOLDER",
-    tech: ["Python", "FastAPI", "ML"],
-    year: "2025",
-    links: [{ label: "Code", url: "#" }],
+    id: "expense-tracker",
+    name: "Python Expense Tracker",
+    tagline: "Personal finance tracking tool.",
+    description: "A Python application for tracking and categorizing personal expenses.",
+    role: "Solo developer",
+    tech: ["Python"],
+    year: "",
+    links: [],
     accent: "#a79ccf",
+  },
+  {
+    id: "student-management-system",
+    name: "Student Management System",
+    tagline: "Records management application.",
+    description:
+      "An application for managing student records and related administrative data.",
+    role: "Solo developer",
+    tech: ["Java"],
+    year: "",
+    links: [],
+    accent: "#8fcaa8",
   },
 ];
 
+/** Experience — exactly as verified. Bullets/dates omitted where not provided. */
 export const experience: ExperienceItem[] = [
   {
-    // PLACEHOLDER
-    role: "Software Engineering Intern",
-    org: "Company Name",
-    period: "2026",
-    bullets: [
-      "PLACEHOLDER — a concrete accomplishment with impact/metrics.",
-      "PLACEHOLDER — a technical contribution and the tools used.",
-    ],
+    role: "AI Trainer",
+    org: "Outlier",
+    period: "2025 — 2026",
+    bullets: [],
+  },
+  {
+    role: "Benchmark Engineer",
+    org: "AfterQuery",
+    bullets: [],
+  },
+  {
+    role: "Museum Staff",
+    org: "Royal Canadian Regiment Museum",
+    period: "2025 — 2026",
+    bullets: [],
+  },
+  {
+    role: "Site Operator",
+    org: "DECO Windshield Repair",
+    bullets: [],
+  },
+  {
+    role: "Sales, Inventory & Event Operations",
+    org: "London Rock Comic Con",
+    period: "2024 — 2026",
+    bullets: [],
   },
 ];
 
 export const education: EducationItem[] = [
   {
-    // PLACEHOLDER
-    school: "University Name",
-    program: "BSc, Computer Science",
-    period: "2024 — 2028",
-    details: ["PLACEHOLDER — relevant coursework, honors, or activities."],
+    school: "Western University",
+    program: "Bachelor of Science in Computer Science · Minor in Software Engineering",
+    period: "2022 — Present",
+    details: [],
   },
 ];

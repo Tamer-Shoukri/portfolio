@@ -1,12 +1,18 @@
 "use client";
 
 import { useEffect } from "react";
-import { profile, projects, experience, education } from "@/data/content";
+import { profile, projects, experience, education, skills } from "@/data/content";
 import { actions, useStore, getState } from "@/state/store";
 
 export function Hud() {
   const view = useStore((s) => s.view);
   const activeFloor = useStore((s) => s.activeFloor);
+
+  // Expose actions for automated verification / debugging. Harmless in prod;
+  // lets headless tests drive state transitions without fragile canvas raycasts.
+  useEffect(() => {
+    (window as unknown as { __portfolio: unknown }).__portfolio = { actions, getState };
+  }, []);
 
   // Capture wheel + touch scroll to drive the exterior camera height.
   useEffect(() => {
@@ -137,7 +143,7 @@ function Intro() {
       }}
     >
       <div className="eyebrow" style={{ marginBottom: 20 }}>
-        {profile.location} · {profile.seeking}
+        {profile.seeking}
       </div>
       <h1
         style={{
@@ -185,7 +191,8 @@ function FloorPeek({ index }: { index: number }) {
       style={{ position: "absolute", left: 40, bottom: 48, maxWidth: 360 }}
     >
       <div className="eyebrow" style={{ color: p.accent }}>
-        Floor {String(index + 1).padStart(2, "0")} · {p.year}
+        Floor {String(index + 1).padStart(2, "0")}
+        {p.year ? ` · ${p.year}` : p.isPrivate ? " · Private" : ""}
       </div>
       <h2 style={{ fontSize: 34, fontWeight: 600, margin: "8px 0 6px", letterSpacing: "-0.01em" }}>
         {p.name}
@@ -230,7 +237,8 @@ function Room({ index }: { index: number }) {
         }}
       >
         <div className="eyebrow" style={{ color: p.accent }}>
-          Project · {p.year}
+          {p.isPrivate ? "Private Project" : "Project"}
+          {p.year ? ` · ${p.year}` : ""}
         </div>
         <h2 style={{ fontSize: 40, fontWeight: 600, margin: "10px 0 4px", letterSpacing: "-0.02em" }}>
           {p.name}
@@ -266,28 +274,34 @@ function Room({ index }: { index: number }) {
           ))}
         </div>
 
-        <div style={{ display: "flex", gap: 12, marginTop: 26 }}>
-          {p.links.map((l) => (
-            <a
-              key={l.label}
-              href={l.url}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                padding: "11px 22px",
-                background: l.label === "Play" ? p.accent : "transparent",
-                color: l.label === "Play" ? "#111" : "var(--fg)",
-                border: `1px solid ${l.label === "Play" ? p.accent : "var(--line)"}`,
-                borderRadius: 2,
-                fontSize: 13,
-                fontWeight: 600,
-                letterSpacing: "0.03em",
-              }}
-            >
-              {l.label} ↗
-            </a>
-          ))}
-        </div>
+        {p.links.length > 0 ? (
+          <div style={{ display: "flex", gap: 12, marginTop: 26 }}>
+            {p.links.map((l) => (
+              <a
+                key={l.label}
+                href={l.url}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  padding: "11px 22px",
+                  background: l.label === "Play" ? p.accent : "transparent",
+                  color: l.label === "Play" ? "#111" : "var(--fg)",
+                  border: `1px solid ${l.label === "Play" ? p.accent : "var(--line)"}`,
+                  borderRadius: 2,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  letterSpacing: "0.03em",
+                }}
+              >
+                {l.label} ↗
+              </a>
+            ))}
+          </div>
+        ) : (
+          <div className="eyebrow" style={{ marginTop: 26, opacity: 0.7 }}>
+            {p.isPrivate ? "Repository kept private" : "Links available on request"}
+          </div>
+        )}
 
         <button
           onClick={() => actions.exitRoom()}
@@ -364,15 +378,18 @@ function InfoPanel() {
         <div className="eyebrow">Experience</div>
         {experience.map((e, i) => (
           <div key={i} style={{ marginTop: 18, paddingBottom: 18, borderBottom: "1px solid var(--line)" }}>
-            <div style={{ fontSize: 17, fontWeight: 600 }}>{e.role}</div>
-            <div style={{ fontSize: 13, color: "var(--fg-dim)", margin: "3px 0 10px" }}>
-              {e.org} · {e.period}
+            <div style={{ fontSize: 16, fontWeight: 600 }}>{e.role}</div>
+            <div style={{ fontSize: 13, color: "var(--fg-dim)", margin: "3px 0 0" }}>
+              {e.org}
+              {e.period ? ` · ${e.period}` : ""}
             </div>
-            <ul style={{ paddingLeft: 16, color: "var(--fg-dim)", fontSize: 13, lineHeight: 1.6 }}>
-              {e.bullets.map((b, j) => (
-                <li key={j}>{b}</li>
-              ))}
-            </ul>
+            {e.bullets.length > 0 && (
+              <ul style={{ paddingLeft: 16, marginTop: 10, color: "var(--fg-dim)", fontSize: 13, lineHeight: 1.6 }}>
+                {e.bullets.map((b, j) => (
+                  <li key={j}>{b}</li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
       </section>
@@ -381,24 +398,48 @@ function InfoPanel() {
         <div className="eyebrow">Education</div>
         {education.map((ed, i) => (
           <div key={i} style={{ marginTop: 18 }}>
-            <div style={{ fontSize: 17, fontWeight: 600 }}>{ed.school}</div>
-            <div style={{ fontSize: 13, color: "var(--fg-dim)", margin: "3px 0 10px" }}>
+            <div style={{ fontSize: 16, fontWeight: 600 }}>{ed.school}</div>
+            <div style={{ fontSize: 13, color: "var(--fg-dim)", margin: "3px 0 0" }}>
               {ed.program} · {ed.period}
             </div>
-            <ul style={{ paddingLeft: 16, color: "var(--fg-dim)", fontSize: 13, lineHeight: 1.6 }}>
-              {ed.details.map((d, j) => (
-                <li key={j}>{d}</li>
-              ))}
-            </ul>
+            {ed.details.length > 0 && (
+              <ul style={{ paddingLeft: 16, marginTop: 10, color: "var(--fg-dim)", fontSize: 13, lineHeight: 1.6 }}>
+                {ed.details.map((d, j) => (
+                  <li key={j}>{d}</li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
       </section>
 
+      <section id="info-skills" style={{ marginTop: 34 }}>
+        <div className="eyebrow">Skills</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14 }}>
+          {skills.map((s) => (
+            <span
+              key={s}
+              style={{
+                fontSize: 12,
+                padding: "5px 11px",
+                border: "1px solid var(--line)",
+                borderRadius: 999,
+                color: "var(--fg-dim)",
+              }}
+            >
+              {s}
+            </span>
+          ))}
+        </div>
+      </section>
+
       <section id="info-contact" style={{ marginTop: 34 }}>
         <div className="eyebrow">Contact</div>
-        <a href={`mailto:${profile.email}`} style={{ display: "block", marginTop: 14, fontSize: 17, color: "var(--accent)" }}>
-          {profile.email}
-        </a>
+        {profile.email && (
+          <a href={`mailto:${profile.email}`} style={{ display: "block", marginTop: 14, fontSize: 16, color: "var(--accent)" }}>
+            {profile.email}
+          </a>
+        )}
         <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
           {profile.socials.map((s) => (
             <a key={s.label} href={s.url} target="_blank" rel="noreferrer" className="eyebrow" style={{ color: "var(--fg)" }}>
