@@ -25,6 +25,9 @@ export function Floor({ index, project }: FloorProps) {
   const view = useStore((s) => s.view);
   const isActive = activeFloor === index;
   const isOpen = doorOpen === index;
+  // When this floor is the room the user has entered, hide its glass shell so
+  // the camera (now inside) sees the interior cleanly rather than through tint.
+  const isRoom = view === "room" && activeFloor === index;
 
   const [hovered, setHovered] = useState(false);
   const [doorHovered, setDoorHovered] = useState(false);
@@ -45,6 +48,9 @@ export function Floor({ index, project }: FloorProps) {
     if (glow.current) {
       const want = isActive ? 0.14 : hovered ? 0.1 : 0.0;
       glow.current.emissiveIntensity = THREE.MathUtils.damp(glow.current.emissiveIntensity, want, 5, dt);
+      // Fade the glass shell out when inside this room, back in otherwise.
+      const targetOpacity = isRoom ? 0.0 : 0.97;
+      glow.current.opacity = THREE.MathUtils.damp(glow.current.opacity, targetOpacity, 8, dt);
     }
   });
 

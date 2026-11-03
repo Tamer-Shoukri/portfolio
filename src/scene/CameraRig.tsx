@@ -7,7 +7,7 @@ import * as THREE from "three";
 import { useStore } from "@/state/store";
 
 type OrbitControlsImpl = React.ComponentRef<typeof OrbitControls>;
-import { floorCenterY, buildingHeight, FRONT_Z } from "./layout";
+import { floorCenterY, buildingHeight, FRONT_Z, FLOOR_DEPTH } from "./layout";
 
 const tmpPos = new THREE.Vector3();
 const tmpLook = new THREE.Vector3();
@@ -30,10 +30,11 @@ function computeTarget(
   }
 
   if (view === "room" && activeFloor !== null) {
-    // Inside the room: camera just in front of the doorway, looking in.
+    // Inside the room: camera stands just inside the doorway, looking toward the
+    // back wall / display. Slightly off-center for a more dynamic composition.
     const y = floorCenterY(activeFloor);
-    outPos.set(0, y + 0.1, FRONT_Z + 2.2);
-    outLook.set(0, y, 0);
+    outPos.set(1.1, y + 0.15, FRONT_Z - 0.4);
+    outLook.set(-0.3, y - 0.05, -FLOOR_DEPTH / 2);
     return;
   }
 

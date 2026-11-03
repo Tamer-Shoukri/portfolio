@@ -8,10 +8,12 @@ export function Hud() {
   const view = useStore((s) => s.view);
   const activeFloor = useStore((s) => s.activeFloor);
 
-  // Expose actions for automated verification / debugging. Harmless in prod;
-  // lets headless tests drive state transitions without fragile canvas raycasts.
+  // Dev-only test seam: lets headless tests drive state transitions without
+  // fragile canvas raycasts. Stripped from production builds.
   useEffect(() => {
-    (window as unknown as { __portfolio: unknown }).__portfolio = { actions, getState };
+    if (process.env.NODE_ENV !== "production") {
+      (window as unknown as { __portfolio: unknown }).__portfolio = { actions, getState };
+    }
   }, []);
 
   // Capture wheel + touch scroll to drive the exterior camera height.
@@ -297,11 +299,11 @@ function Room({ index }: { index: number }) {
               </a>
             ))}
           </div>
-        ) : (
+        ) : p.isPrivate ? (
           <div className="eyebrow" style={{ marginTop: 26, opacity: 0.7 }}>
-            {p.isPrivate ? "Repository kept private" : "Links available on request"}
+            Repository kept private
           </div>
-        )}
+        ) : null}
 
         <button
           onClick={() => actions.exitRoom()}

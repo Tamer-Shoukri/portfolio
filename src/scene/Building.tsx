@@ -3,9 +3,14 @@
 import * as THREE from "three";
 import { projects } from "@/data/content";
 import { Floor } from "./Floor";
+import { RoomInterior } from "./RoomInterior";
 import { FLOOR_WIDTH, FLOOR_DEPTH, buildingHeight } from "./layout";
+import { useStore } from "@/state/store";
 
 export function Building() {
+  const view = useStore((s) => s.view);
+  const activeFloor = useStore((s) => s.activeFloor);
+
   return (
     <group>
       {/* Ground plane */}
@@ -23,6 +28,16 @@ export function Building() {
       {/* Floors */}
       {projects.map((p, i) => (
         <Floor key={p.id} index={i} project={p} />
+      ))}
+
+      {/* Room interiors — only the entered floor mounts one. */}
+      {projects.map((p, i) => (
+        <RoomInterior
+          key={`room-${p.id}`}
+          index={i}
+          project={p}
+          active={view === "room" && activeFloor === i}
+        />
       ))}
 
       {/* Roof cap */}
