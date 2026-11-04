@@ -3,19 +3,19 @@
 import { useSyncExternalStore } from "react";
 import { projects } from "@/data/content";
 
-export type View = "intro" | "exterior" | "room";
+export type View = "intro" | "space" | "focus" | "room";
 
 export interface AppState {
   view: View;
-  /** Index into projects[] for the currently focused floor, or null. */
+  /** Index into projects[] for the focused card, or null. */
   activeFloor: number | null;
-  /** Whether a door is mid-opening (used to gate room entry). */
+  /** Legacy door field (unused in cards concept, kept for type stability). */
   doorOpen: number | null;
-  /** Scroll progress 0..1 across the whole building (drives exterior camera). */
+  /** Orbit progress 0..1 (reserved; cards use OrbitControls directly). */
   scroll: number;
 }
 
-const floorCount = projects.length;
+const cardCount = projects.length;
 
 let state: AppState = {
   view: "intro",
@@ -47,34 +47,26 @@ function set(patch: Partial<AppState>) {
 // ---------- Actions ----------
 
 export const actions = {
-  enterBuilding() {
-    if (state.view === "intro") set({ view: "exterior" });
+  enterSpace() {
+    if (state.view === "intro") set({ view: "space" });
   },
   setScroll(s: number) {
     set({ scroll: Math.max(0, Math.min(1, s)) });
   },
-  /** Focus a floor (camera approaches). */
-  focusFloor(index: number) {
-    set({ view: "exterior", activeFloor: index });
+  /** Click a card: fly to it and open its showcase. */
+  focusCard(index: number) {
+    set({ view: "room", activeFloor: index });
   },
-  clearFloor() {
-    set({ activeFloor: null, doorOpen: null });
-  },
-  openDoor(index: number) {
-    set({ doorOpen: index });
-  },
-  enterRoom(index: number) {
-    set({ view: "room", activeFloor: index, doorOpen: index });
-  },
-  exitRoom() {
-    set({ view: "exterior", doorOpen: null });
+  /** Close the focused card, return to the floating constellation. */
+  closeCard() {
+    set({ view: "space", activeFloor: null });
   },
   goToIntro() {
     set({ view: "intro", activeFloor: null, doorOpen: null, scroll: 0 });
   },
 };
 
-export { floorCount };
+export { cardCount };
 
 // ---------- Hook ----------
 

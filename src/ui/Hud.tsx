@@ -16,55 +16,15 @@ export function Hud() {
     }
   }, []);
 
-  // Capture wheel + touch scroll to drive the exterior camera height.
-  useEffect(() => {
-    let acc = useStoreScroll();
-    function onWheel(e: WheelEvent) {
-      if (getView() !== "exterior" || getActiveFloor() !== null) return;
-      acc = Math.max(0, Math.min(1, acc + e.deltaY * 0.0012));
-      actions.setScroll(acc);
-    }
-    let touchY = 0;
-    function onTouchStart(e: TouchEvent) {
-      touchY = e.touches[0].clientY;
-    }
-    function onTouchMove(e: TouchEvent) {
-      if (getView() !== "exterior" || getActiveFloor() !== null) return;
-      const dy = touchY - e.touches[0].clientY;
-      touchY = e.touches[0].clientY;
-      acc = Math.max(0, Math.min(1, acc + dy * 0.0025));
-      actions.setScroll(acc);
-    }
-    window.addEventListener("wheel", onWheel, { passive: true });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
-    return () => {
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-    };
-  }, []);
-
   return (
     <div className="hud">
       <TopBar />
       {view === "intro" && <Intro />}
-      {view === "exterior" && activeFloor !== null && <FloorPeek index={activeFloor} />}
       {view === "room" && activeFloor !== null && <Room index={activeFloor} />}
+      {view === "space" && <SpaceHint />}
       <Footer />
     </div>
   );
-}
-
-// Access latest store values inside event listeners without re-subscribing.
-function getView() {
-  return getState().view;
-}
-function getActiveFloor() {
-  return getState().activeFloor;
-}
-function useStoreScroll() {
-  return getState().scroll;
 }
 
 function TopBar() {
@@ -103,7 +63,7 @@ function TopBar() {
 
 function NavMenu() {
   const items: { label: string; onClick: () => void }[] = [
-    { label: "Projects", onClick: () => actions.focusFloor(0) },
+    { label: "Projects", onClick: () => actions.closeCard() },
     { label: "Experience", onClick: () => scrollToInfo("experience") },
     { label: "Education", onClick: () => scrollToInfo("education") },
     { label: "Contact", onClick: () => scrollToInfo("contact") },
@@ -162,7 +122,7 @@ function Intro() {
         {profile.title} — {profile.tagline}
       </p>
       <button
-        onClick={() => actions.enterBuilding()}
+        onClick={() => actions.enterSpace()}
         style={{
           marginTop: 38,
           padding: "14px 32px",
@@ -176,40 +136,23 @@ function Intro() {
           fontSize: 14,
         }}
       >
-        Explore the Building →
+        Enter →
       </button>
       <div className="eyebrow" style={{ marginTop: 26, opacity: 0.6 }}>
-        Scroll to rise · Drag to orbit · Click a floor
+        Drag to orbit · Scroll to zoom · Click a project
       </div>
     </div>
   );
 }
 
-function FloorPeek({ index }: { index: number }) {
-  const p = projects[index];
+/** Small persistent hint while browsing the floating cards. */
+function SpaceHint() {
   return (
     <div
-      className="fade-in"
-      style={{ position: "absolute", left: 40, bottom: 48, maxWidth: 360 }}
+      className="fade-in eyebrow"
+      style={{ position: "absolute", left: 0, right: 0, bottom: 34, textAlign: "center", opacity: 0.55 }}
     >
-      <div className="eyebrow" style={{ color: p.accent }}>
-        Floor {String(index + 1).padStart(2, "0")}
-        {p.year ? ` · ${p.year}` : p.isPrivate ? " · Private" : ""}
-      </div>
-      <h2 style={{ fontSize: 34, fontWeight: 600, margin: "8px 0 6px", letterSpacing: "-0.01em" }}>
-        {p.name}
-      </h2>
-      <p style={{ color: "var(--fg-dim)", fontSize: 15, lineHeight: 1.5 }}>{p.tagline}</p>
-      <div style={{ display: "flex", gap: 14, marginTop: 18, alignItems: "center" }}>
-        <span className="eyebrow">Click the door to enter</span>
-      </div>
-      <button
-        onClick={() => actions.clearFloor()}
-        className="eyebrow"
-        style={{ marginTop: 20, background: "none", border: "1px solid var(--line)", padding: "8px 16px", borderRadius: 2, cursor: "pointer" }}
-      >
-        ← Back to building
-      </button>
+      Drag to orbit · Scroll to zoom · Click a project to open it
     </div>
   );
 }
@@ -239,7 +182,7 @@ function Room({ index }: { index: number }) {
         }}
       >
         <div className="eyebrow" style={{ color: p.accent }}>
-          {p.isPrivate ? "Private Project" : "Project"}
+          {p.comingSoon ? "Coming Soon" : p.isPrivate ? "Private Project" : "Project"}
           {p.year ? ` · ${p.year}` : ""}
         </div>
         <h2 style={{ fontSize: 40, fontWeight: 600, margin: "10px 0 4px", letterSpacing: "-0.02em" }}>
@@ -299,6 +242,23 @@ function Room({ index }: { index: number }) {
               </a>
             ))}
           </div>
+        ) : p.comingSoon ? (
+          <div
+            style={{
+              marginTop: 26,
+              display: "inline-block",
+              padding: "8px 16px",
+              border: `1px solid ${p.accent}`,
+              borderRadius: 999,
+              color: p.accent,
+              fontSize: 12,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              fontWeight: 600,
+            }}
+          >
+            Coming Soon
+          </div>
         ) : p.isPrivate ? (
           <div className="eyebrow" style={{ marginTop: 26, opacity: 0.7 }}>
             Repository kept private
@@ -306,7 +266,7 @@ function Room({ index }: { index: number }) {
         ) : null}
 
         <button
-          onClick={() => actions.exitRoom()}
+          onClick={() => actions.closeCard()}
           className="eyebrow"
           style={{
             marginTop: 30,
@@ -317,7 +277,7 @@ function Room({ index }: { index: number }) {
             cursor: "pointer",
           }}
         >
-          ← Exit room
+          ← Back to projects
         </button>
       </div>
     </div>

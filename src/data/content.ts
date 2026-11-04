@@ -19,6 +19,8 @@ export interface Project {
   highlight?: string;
   /** Private projects show no links and a "Private" marker. */
   isPrivate?: boolean;
+  /** Coming-soon projects show a "Coming Soon" badge and no live links. */
+  comingSoon?: boolean;
   /** Accent color for this floor/room (hex). */
   accent: string;
 }
@@ -96,39 +98,16 @@ export const projects: Project[] = [
   },
   {
     id: "d4c",
-    name: "D4C — Prediction Market Intelligence",
-    tagline: "Private research platform.",
+    name: "D4C — Weather & Market Prediction",
+    tagline: "Coming soon.",
     description:
-      "A private research platform spanning data pipelines, weather forecasting, and prediction-market analysis. Proprietary implementation and data are kept private.",
+      "A research platform combining weather forecasting and prediction-market analysis. A full showcase — including how it was built and the thinking behind it — is coming soon.",
     role: "Developer",
     tech: ["Python", "Data Pipelines", "Forecasting"],
     year: "",
     links: [],
-    isPrivate: true,
+    comingSoon: true,
     accent: "#d6b98a",
-  },
-  {
-    id: "expense-tracker",
-    name: "Python Expense Tracker",
-    tagline: "Personal finance tracking tool.",
-    description: "A Python application for tracking and categorizing personal expenses.",
-    role: "Solo developer",
-    tech: ["Python"],
-    year: "",
-    links: [],
-    accent: "#a79ccf",
-  },
-  {
-    id: "student-management-system",
-    name: "Student Management System",
-    tagline: "Records management application.",
-    description:
-      "An application for managing student records and related administrative data.",
-    role: "Solo developer",
-    tech: ["Java"],
-    year: "",
-    links: [],
-    accent: "#8fcaa8",
   },
 ];
 
