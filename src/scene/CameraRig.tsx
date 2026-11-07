@@ -5,7 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { useStore } from "@/state/store";
-import { cardFocusCamera } from "./layout";
+import { DESK_CAMERA, READ_CAMERA } from "./layout";
 
 type OrbitControlsImpl = React.ComponentRef<typeof OrbitControls>;
 
@@ -14,27 +14,26 @@ const tmpLook = new THREE.Vector3();
 
 function computeTarget(
   view: string,
-  activeCard: number | null,
+  _activeCard: number | null,
   outPos: THREE.Vector3,
   outLook: THREE.Vector3,
 ) {
-  if ((view === "room" || view === "focus") && activeCard !== null) {
-    const { pos, look } = cardFocusCamera(activeCard);
-    outPos.copy(pos);
-    outLook.copy(look);
+  if (view === "room" || view === "focus") {
+    outPos.copy(READ_CAMERA.pos);
+    outLook.copy(READ_CAMERA.look);
     return;
   }
 
   if (view === "intro") {
-    // Wide cinematic establishing shot of the whole field, angled.
-    outPos.set(9, 3.5, 17);
-    outLook.set(0, -0.3, 0);
+    // Slightly pulled-back desk establishing shot.
+    outPos.set(DESK_CAMERA.pos.x + 2, DESK_CAMERA.pos.y + 1.5, DESK_CAMERA.pos.z + 3);
+    outLook.copy(DESK_CAMERA.look);
     return;
   }
 
-  // Free "space" view: default framing (OrbitControls takes over).
-  outPos.set(0, 1.5, 15);
-  outLook.set(0, 0, 0);
+  // Free "space" view: desk overview (OrbitControls takes over interaction).
+  outPos.copy(DESK_CAMERA.pos);
+  outLook.copy(DESK_CAMERA.look);
 }
 
 export function CameraRig() {
@@ -74,10 +73,10 @@ export function CameraRig() {
       ref={controls}
       enabled={orbitActive}
       enablePan={false}
-      minDistance={8}
-      maxDistance={34}
-      minPolarAngle={Math.PI * 0.2}
-      maxPolarAngle={Math.PI * 0.6}
+      minDistance={5}
+      maxDistance={14}
+      minPolarAngle={Math.PI * 0.12}
+      maxPolarAngle={Math.PI * 0.46}
       enableDamping
       dampingFactor={0.08}
     />
