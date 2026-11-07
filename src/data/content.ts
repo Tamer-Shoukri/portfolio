@@ -147,7 +147,7 @@ export const education: EducationItem[] = [
   {
     school: "Western University",
     program: "Bachelor of Science in Computer Science · Minor in Software Engineering",
-    period: "2022 — Present",
+    period: "2024 — Present",
     details: [],
   },
 ];
