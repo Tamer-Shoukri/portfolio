@@ -125,12 +125,6 @@ export const experience: ExperienceItem[] = [
     bullets: [],
   },
   {
-    role: "Museum Staff",
-    org: "Royal Canadian Regiment Museum",
-    period: "2025 — 2026",
-    bullets: [],
-  },
-  {
     role: "Site Operator",
     org: "DECO Windshield Repair",
     bullets: [],
