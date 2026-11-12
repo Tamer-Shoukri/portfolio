@@ -97,6 +97,22 @@ export const projects: Project[] = [
     accent: "#7fb0e6",
   },
   {
+    id: "ninja-motion",
+    name: "Ninja Motion",
+    tagline: "Fruit Ninja you play with your body.",
+    description:
+      "A browser game that turns your webcam into the controller. Google MediaPipe tracks 21 hand landmarks in real time, and you slice flying fruit by swinging your actual hands through the air — a fruit is only cut when your fingertip sweeps through it fast enough, so it feels like a real blade. Features real-time computer-vision hand tracking, physics-based fruit tossing, split-and-splatter effects, combos, bombs, and a full game loop, all running client-side at 60fps.",
+    role: "Solo developer",
+    tech: ["TypeScript", "MediaPipe", "Computer Vision", "Canvas", "Vite"],
+    year: "2026",
+    links: [
+      { label: "Play", url: "https://tamer-shoukri.github.io/ninja-motion/" },
+      { label: "Code", url: "https://github.com/Tamer-Shoukri/ninja-motion" },
+    ],
+    highlight: "Real-time webcam hand-tracking — no controller, just you.",
+    accent: "#8ee6c8",
+  },
+  {
     id: "d4c",
     name: "D4C — Weather & Market Prediction",
     tagline: "Coming soon.",
