@@ -247,7 +247,7 @@ function ProjectMedia({ p }: { p: Project }) {
   const play = p.links.find((l) => l.label === "Play");
   const img = (
     // eslint-disable-next-line @next/next/no-img-element -- static export, images are pre-sized JPEGs
-    <img src={asset(p.image!)} alt={p.imageAlt ?? p.name} loading="lazy" width={1600} height={900} />
+    <img src={asset(p.image!)} alt={p.imageAlt ?? p.name} loading="lazy" />
   );
   return play ? (
     <a href={play.url} target="_blank" rel="noreferrer" className="project-media" aria-label={`Play ${p.name}`}>
