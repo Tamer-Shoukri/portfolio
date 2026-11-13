@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { profile, projects, experience, education, skills } from "@/data/content";
+import { profile, projects, experience, education, skills, type Project } from "@/data/content";
+
+/** Prefix /public asset paths with the deploy base path (e.g. /portfolio on GitHub Pages). */
+const asset = (path: string) => `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${path}`;
 
 export function Portfolio() {
   // Reveal-on-scroll
@@ -55,7 +58,7 @@ function Nav() {
         <a href="#top" style={{ fontWeight: 700, letterSpacing: "0.02em" }}>
           {initials(profile.name)}
         </a>
-        <nav style={{ display: "flex", gap: 28 }}>
+        <nav className="nav-links">
           <a href="#projects" className="eyebrow">
             Projects
           </a>
@@ -111,9 +114,8 @@ function Hero() {
               className="reveal"
               style={{ fontSize: 16, color: "var(--fg-dim)", marginTop: 16, maxWidth: 540, lineHeight: 1.7 }}
             >
-              {profile.tagline} I build clean, reliable software — from polished front-end
-              experiences to the logic and tooling behind them — and I&apos;m focused on shipping
-              real, working products.
+              {profile.tagline} I build clean, reliable software — from front-end experiences to
+              the logic and tooling behind them — and I focus on shipping real, working products.
             </p>
 
             <div style={{ display: "flex", gap: 14, marginTop: 34, flexWrap: "wrap" }} className="reveal">
@@ -128,9 +130,6 @@ function Hero() {
 
           {/* Right: info card */}
           <aside className="panel reveal" style={{ flex: "0 1 320px", minWidth: 280, padding: 26 }}>
-            <div style={{ fontWeight: 600, fontSize: 18 }}>{profile.name}</div>
-            <div style={{ color: "var(--fg-dim)", fontSize: 14, marginTop: 4 }}>{profile.title}</div>
-            <div style={{ height: 1, background: "var(--line)", margin: "20px 0" }} />
             <InfoRow label="Studying" value="Western University" />
             <InfoRow label="Focus" value="AI / Full-Stack software" />
             <InfoRow label="Seeking" value={profile.seeking} />
@@ -172,78 +171,160 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 function Projects() {
+  const featured = projects.filter((p) => p.featured);
+  const rest = projects.filter((p) => !p.featured);
   return (
     <section id="projects" style={{ padding: "70px 0" }}>
       <div className="wrap">
         <SectionHead eyebrow="Selected Work" title="Projects" />
-        <div style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", marginTop: 36 }}>
-          {projects.map((p) => (
-            <article key={p.id} className="panel reveal" style={{ padding: 26, display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span className="eyebrow" style={{ color: p.accent }}>
-                  {p.comingSoon ? "Coming Soon" : p.year ? `Project · ${p.year}` : "Project"}
-                </span>
-                <span
-                  style={{
-                    fontSize: 10,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: p.comingSoon ? p.accent : "var(--fg-dim)",
-                    border: `1px solid ${p.comingSoon ? p.accent : "var(--line)"}`,
-                    borderRadius: 999,
-                    padding: "3px 10px",
-                  }}
-                >
-                  {p.comingSoon ? "Soon" : "Live"}
-                </span>
-              </div>
-              <h3 style={{ fontSize: 23, fontWeight: 600, margin: "14px 0 6px", letterSpacing: "-0.01em" }}>{p.name}</h3>
-              <p style={{ color: "var(--fg-dim)", fontSize: 14.5, lineHeight: 1.6 }}>{p.description}</p>
-
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 18, paddingTop: 18, borderTop: "1px solid var(--line)" }}>
-                {p.tech.map((t) => (
-                  <span
-                    key={t}
-                    style={{
-                      fontSize: 11.5,
-                      padding: "4px 10px",
-                      border: "1px solid var(--line)",
-                      borderRadius: 999,
-                      color: "var(--fg-dim)",
-                    }}
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-
-              {p.links.length > 0 && (
-                <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-                  {p.links.map((l) => (
-                    <a
-                      key={l.label}
-                      href={l.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="btn"
-                      style={{
-                        padding: "9px 16px",
-                        fontSize: 13,
-                        background: l.label === "Play" ? p.accent : "transparent",
-                        color: l.label === "Play" ? "#07080c" : "var(--fg)",
-                        borderColor: l.label === "Play" ? p.accent : "var(--line-strong)",
-                      }}
-                    >
-                      {l.label} ↗
-                    </a>
-                  ))}
-                </div>
-              )}
-            </article>
+        <div style={{ display: "grid", gap: 18, marginTop: 36 }}>
+          {featured.map((p) => (
+            <FeaturedProject key={p.id} p={p} />
           ))}
+          <div style={{ display: "grid", gap: 18, gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
+            {rest.map((p) => (
+              <ProjectCard key={p.id} p={p} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function FeaturedProject({ p }: { p: Project }) {
+  return (
+    <article className="panel reveal project featured" style={{ "--accent-p": p.accent } as React.CSSProperties}>
+      {p.image && <ProjectMedia p={p} />}
+      <div style={{ padding: "clamp(24px, 3vw, 36px)", display: "flex", flexDirection: "column" }}>
+        <ProjectMeta p={p} label="Featured" />
+        <h3 style={{ fontSize: "clamp(26px, 3vw, 32px)", fontWeight: 700, margin: "14px 0 4px", letterSpacing: "-0.02em" }}>
+          {p.name}
+        </h3>
+        <p style={{ color: p.accent, fontSize: 15, fontWeight: 500 }}>{p.tagline}</p>
+        <p style={{ color: "var(--fg-dim)", fontSize: 15, lineHeight: 1.65, marginTop: 14 }}>{p.description}</p>
+        {p.highlights && (
+          <ul className="highlights">
+            {p.highlights.map((h) => (
+              <li key={h}>{h}</li>
+            ))}
+          </ul>
+        )}
+        <TechChips tech={p.tech} />
+        <ProjectLinks p={p} />
+      </div>
+    </article>
+  );
+}
+
+function ProjectCard({ p }: { p: Project }) {
+  return (
+    <article
+      className="panel reveal project"
+      style={{ display: "flex", flexDirection: "column", "--accent-p": p.accent } as React.CSSProperties}
+    >
+      {p.image ? (
+        <ProjectMedia p={p} />
+      ) : (
+        <div className="project-media project-media-placeholder" aria-hidden>
+          <span>{p.comingSoon ? "In development" : p.name}</span>
+        </div>
+      )}
+      <div style={{ padding: 26, display: "flex", flexDirection: "column", flex: 1 }}>
+        <ProjectMeta p={p} />
+        <h3 style={{ fontSize: 23, fontWeight: 600, margin: "14px 0 6px", letterSpacing: "-0.01em" }}>{p.name}</h3>
+        <p style={{ color: "var(--fg-dim)", fontSize: 14.5, lineHeight: 1.6 }}>{p.description}</p>
+        <div style={{ marginTop: "auto" }}>
+          <TechChips tech={p.tech} />
+          <ProjectLinks p={p} />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function ProjectMedia({ p }: { p: Project }) {
+  const play = p.links.find((l) => l.label === "Play");
+  const img = (
+    // eslint-disable-next-line @next/next/no-img-element -- static export, images are pre-sized JPEGs
+    <img src={asset(p.image!)} alt={p.imageAlt ?? p.name} loading="lazy" width={1600} height={900} />
+  );
+  return play ? (
+    <a href={play.url} target="_blank" rel="noreferrer" className="project-media" aria-label={`Play ${p.name}`}>
+      {img}
+      <span className="project-media-cta">Play ↗</span>
+    </a>
+  ) : (
+    <div className="project-media">{img}</div>
+  );
+}
+
+function ProjectMeta({ p, label }: { p: Project; label?: string }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+      <span className="eyebrow" style={{ color: p.accent }}>
+        {p.comingSoon ? "Coming Soon" : [label ?? "Project", p.year].filter(Boolean).join(" · ")}
+      </span>
+      <span
+        style={{
+          fontSize: 10,
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          color: p.comingSoon ? p.accent : "var(--fg-dim)",
+          border: `1px solid ${p.comingSoon ? p.accent : "var(--line)"}`,
+          borderRadius: 999,
+          padding: "3px 10px",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {!p.comingSoon && <span className="live-dot" style={{ background: p.accent }} aria-hidden />}
+        {p.comingSoon ? "Soon" : "Live"}
+      </span>
+    </div>
+  );
+}
+
+function TechChips({ tech }: { tech: string[] }) {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 18, paddingTop: 18, borderTop: "1px solid var(--line)" }}>
+      {tech.map((t) => (
+        <span key={t} className="chip">
+          {t}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function ProjectLinks({ p }: { p: Project }) {
+  if (p.links.length === 0) return null;
+  return (
+    <>
+      <div style={{ display: "flex", gap: 10, marginTop: 20, flexWrap: "wrap" }}>
+        {p.links.map((l) => (
+          <a
+            key={l.label}
+            href={l.url}
+            target="_blank"
+            rel="noreferrer"
+            className="btn"
+            style={{
+              padding: "9px 16px",
+              fontSize: 13,
+              background: l.label === "Play" ? p.accent : "transparent",
+              color: l.label === "Play" ? "#07080c" : "var(--fg)",
+              borderColor: l.label === "Play" ? p.accent : "var(--line-strong)",
+            }}
+          >
+            {l.label === "Play" ? "Play live" : "View code"} ↗
+          </a>
+        ))}
+      </div>
+      {p.note && <p style={{ color: "var(--fg-faint)", fontSize: 12.5, marginTop: 12 }}>{p.note}</p>}
+    </>
   );
 }
 
@@ -288,20 +369,6 @@ function Background() {
                 <div style={{ color: "var(--fg-dim)", fontSize: 14, marginTop: 3 }}>{ed.program}</div>
               </div>
             ))}
-
-            <div className="eyebrow" style={{ margin: "30px 0 14px" }}>
-              Skills
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-              {skills.map((s) => (
-                <span
-                  key={s}
-                  style={{ fontSize: 12, padding: "5px 11px", border: "1px solid var(--line)", borderRadius: 999, color: "var(--fg-dim)" }}
-                >
-                  {s}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       </div>
@@ -351,9 +418,14 @@ function Footer() {
         style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}
       >
         <span className="eyebrow">© {new Date().getFullYear()} {profile.name}</span>
-        <span className="eyebrow" style={{ opacity: 0.6 }}>
-          Clean design · Real projects · Strong execution
-        </span>
+        <a
+          href="https://github.com/Tamer-Shoukri/portfolio"
+          target="_blank"
+          rel="noreferrer"
+          className="eyebrow footer-link"
+        >
+          Built with Next.js · View source ↗
+        </a>
       </div>
     </footer>
   );

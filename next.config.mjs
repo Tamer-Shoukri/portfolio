@@ -7,7 +7,6 @@ const nextConfig = {
   // basePath is set at build time for GitHub Pages project sites; empty locally.
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || "",
   assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH || "",
-  transpilePackages: ["three"],
 };
 
 export default nextConfig;

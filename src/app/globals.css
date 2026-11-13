@@ -123,3 +123,171 @@ a {
     scroll-behavior: auto;
   }
 }
+
+/* Nav: tighten on narrow screens so links never collide with the monogram */
+.nav-links {
+  display: flex;
+  gap: 28px;
+}
+@media (max-width: 520px) {
+  .nav-links {
+    gap: 16px;
+  }
+  .nav-links .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+}
+
+/* Keyboard focus — visible on every interactive element */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Projects */
+.project {
+  overflow: hidden;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.project:hover {
+  border-color: color-mix(in srgb, var(--accent-p, var(--accent)) 45%, transparent);
+}
+.project.featured {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: stretch;
+}
+@media (max-width: 860px) {
+  .project.featured {
+    grid-template-columns: 1fr;
+  }
+}
+.project-media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: #070910;
+  border-bottom: 1px solid var(--line);
+  aspect-ratio: 16 / 9;
+}
+.project.featured .project-media {
+  aspect-ratio: auto;
+  min-height: 100%;
+  border-bottom: none;
+  border-right: 1px solid var(--line);
+}
+@media (max-width: 860px) {
+  .project.featured .project-media {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+}
+.project-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 58% 50%;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.project-media:hover img {
+  transform: scale(1.03);
+}
+.project-media-cta {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #07080c;
+  background: var(--accent-p, var(--accent));
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.project-media:hover .project-media-cta,
+.project-media:focus-visible .project-media-cta {
+  opacity: 1;
+  transform: none;
+}
+.highlights {
+  list-style: none;
+  margin-top: 18px;
+  display: grid;
+  gap: 9px;
+}
+.highlights li {
+  position: relative;
+  padding-left: 20px;
+  color: var(--fg);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.highlights li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.55em;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--accent-p, var(--accent));
+}
+.chip {
+  font-size: 11.5px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--fg-dim);
+}
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 currentColor;
+  animation: pulse 2s ease-out infinite;
+}
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.35; }
+  100% { opacity: 1; }
+}
+.footer-link {
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+.footer-link:hover {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
+  .project-media img { transition: none; }
+}
+
+/* Placeholder media for projects without a screenshot yet (keeps grid rows even) */
+.project-media-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(color-mix(in srgb, var(--accent-p) 10%, transparent) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, color-mix(in srgb, var(--accent-p) 10%, transparent) 1px, transparent 1px) 0 0 / 28px 28px,
+    radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--accent-p) 16%, #0b0e17) 0%, #070910 75%);
+}
+.project-media-placeholder span {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-p);
+  padding: 7px 14px;
+  border: 1px dashed color-mix(in srgb, var(--accent-p) 60%, transparent);
+  border-radius: 999px;
+}

@@ -3,8 +3,8 @@
  *
  * All content below is from information Tamer verified directly. Nothing is
  * invented — where a detail (dates, links, metrics) was not provided, it is
- * intentionally omitted rather than guessed. The 3D experience is driven
- * entirely by this file, so content never requires touching the scene code.
+ * intentionally omitted rather than guessed. The page is driven entirely by
+ * this file, so content never requires touching the UI code.
  */
 
 export interface Project {
@@ -17,11 +17,20 @@ export interface Project {
   year: string;
   links: { label: string; url: string }[];
   highlight?: string;
+  /** Short "how it works" points, shown on the featured card. */
+  highlights?: string[];
+  /** Small practical note under the links (e.g. hardware requirements). */
+  note?: string;
   /** Private projects show no links and a "Private" marker. */
   isPrivate?: boolean;
   /** Coming-soon projects show a "Coming Soon" badge and no live links. */
   comingSoon?: boolean;
-  /** Accent color for this floor/room (hex). */
+  /** Shown as a large spotlight card above the grid. */
+  featured?: boolean;
+  /** Screenshot path under /public (base path is prefixed at render time). */
+  image?: string;
+  imageAlt?: string;
+  /** Accent color for this project's card (hex). */
   accent: string;
 }
 
@@ -78,30 +87,16 @@ export const skills: string[] = [
 ];
 
 /**
- * Projects map to FLOORS (top floor = first entry). Each is a room you enter.
+ * Projects, in display order. A `featured` project gets the large spotlight
+ * card; the rest render in the grid below it.
  */
 export const projects: Project[] = [
-  {
-    id: "math-tug-of-war",
-    name: "Math Tug-of-War",
-    tagline: "A 2D browser arcade game.",
-    description:
-      "A polished two-player arcade game where players race to answer addition, subtraction, and multiplication questions — every correct answer pulls a shared rope toward their side, and the first to drag the opponent past the boundary wins. Includes a local two-player mode and a difficulty-scaled AI opponent.",
-    role: "Solo developer",
-    tech: ["Phaser 3", "TypeScript", "Vite"],
-    year: "2026",
-    links: [
-      { label: "Play", url: "https://tamer-shoukri.github.io/math-tug-of-war/" },
-      { label: "Code", url: "https://github.com/Tamer-Shoukri/math-tug-of-war" },
-    ],
-    accent: "#7fb0e6",
-  },
   {
     id: "ninja-motion",
     name: "Ninja Motion",
     tagline: "Fruit Ninja you play with your body.",
     description:
-      "A browser game that turns your webcam into the controller. Google MediaPipe tracks 21 hand landmarks in real time, and you slice flying fruit by swinging your actual hands through the air — a fruit is only cut when your fingertip sweeps through it fast enough, so it feels like a real blade. Features real-time computer-vision hand tracking, physics-based fruit tossing, split-and-splatter effects, combos, bombs, and a full game loop, all running client-side at 60fps.",
+      "A browser game where your webcam is the controller. You slice flying fruit by swinging your actual hands — a cut only lands when your fingertip sweeps through the fruit fast enough, so it feels like a real blade.",
     role: "Solo developer",
     tech: ["TypeScript", "MediaPipe", "Computer Vision", "Canvas", "Vite"],
     year: "2026",
@@ -109,8 +104,34 @@ export const projects: Project[] = [
       { label: "Play", url: "https://tamer-shoukri.github.io/ninja-motion/" },
       { label: "Code", url: "https://github.com/Tamer-Shoukri/ninja-motion" },
     ],
-    highlight: "Real-time webcam hand-tracking — no controller, just you.",
+    highlights: [
+      "Real-time hand tracking with Google MediaPipe (21 landmarks per hand)",
+      "Speed-gated slicing: fingertip trails hit-tested against each fruit every frame",
+      "Physics tosses, split-and-splatter effects, combos and bombs",
+      "Runs entirely in the browser at 60fps — no server",
+    ],
+    note: "Needs a webcam · best in desktop Chrome",
+    featured: true,
+    image: "/projects/ninja-motion.jpg",
+    imageAlt: "Ninja Motion gameplay: a blade trail slicing a watermelon and an apple in half among flying fruit",
     accent: "#8ee6c8",
+  },
+  {
+    id: "math-tug-of-war",
+    name: "Math Tug-of-War",
+    tagline: "A 2D browser arcade game.",
+    description:
+      "A two-player arcade game where players race to answer addition, subtraction, and multiplication questions — every correct answer pulls a shared rope toward their side, and the first to drag the opponent past the boundary wins. Includes a local two-player mode and a difficulty-scaled AI opponent.",
+    role: "Solo developer",
+    tech: ["Phaser 3", "TypeScript", "Vite"],
+    year: "2026",
+    links: [
+      { label: "Play", url: "https://tamer-shoukri.github.io/math-tug-of-war/" },
+      { label: "Code", url: "https://github.com/Tamer-Shoukri/math-tug-of-war" },
+    ],
+    image: "/projects/math-tug-of-war.jpg",
+    imageAlt: "Math Tug-of-War title screen with blue and red players and mode and difficulty options",
+    accent: "#7fb0e6",
   },
   {
     id: "d4c",
